@@ -32,14 +32,6 @@ const item3 = new Item({
 
 const defaultItems = [item1, item2, item3];
 
-Item.insertMany(defaultItems , (err) =>{
-    if(err){
-        console.log(err);
-    } else {
-        console.log('Successfully saved default items to DB');
-    }
-});
-
 // let items = [];
 // let workItems = [];
 
@@ -47,20 +39,45 @@ app.get('/', (req, res) => {
 
     let day = date.getDay();
 
-    res.render("list", {listTitle: day, items: items});
+    Item.find({}, (err, items) => {
+        if(err){
+            console.log(err);
+        } else {
+            if(items.length === 0){
+                Item.insertMany(defaultItems , (err) =>{
+                    if(err){
+                        console.log(err);
+                    } else {
+                        console.log('Successfully saved default items to DB');
+
+                    }
+                });
+                res.redirect('/');
+            } else {
+                res.render("list", {listTitle: day, items: items});
+        }
+    }
+    });
 });
 
 app.post('/', (req, res) => {
 
     let item = req.body.newItem;
 
-    if(req.body.list === 'Work'){
-        workItems.push(item);
-        res.redirect('/work');
-    } else {
-        items.push(item);
-        res.redirect('/');
-    }
+    const newItem = new Item({
+        name: item
+    });
+
+    newItem.save();
+    res.redirect('/');
+
+    // if(req.body.list === 'Work'){
+    //     workItems.push(item);
+    //     res.redirect('/work');
+    // } else {
+    //     items.push(item);
+    //     res.redirect('/');
+    // }
  
 });
 
