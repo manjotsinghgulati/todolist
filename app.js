@@ -81,6 +81,18 @@ app.post('/', (req, res) => {
  
 });
 
+app.post('/delete', (req, res) => {
+    const checkedItemId = req.body.checkbox;
+    Item.findByIdAndRemove(checkedItemId, (err) => {
+        if(err){
+            console.log(err);
+        } else {
+            console.log('Successfully deleted checked item');
+            res.redirect('/');
+        }
+    });
+});
+
 app.get('/work',(req, res) => {
     res.render("list", {listTitle: "Work List", items: workItems});
 });
@@ -93,7 +105,7 @@ app.post('/work', (req, res) => {
 
 app.get('/about',(req, res) => {
     res.render("about");
-});
+}); 
 
 app.listen(3000, () => {
     console.log('Server is running on port 3000');
